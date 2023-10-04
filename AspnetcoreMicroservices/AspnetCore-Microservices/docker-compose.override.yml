@@ -8,6 +8,11 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+  basketdb:
+    container_name: basketdb
+    restart: always
+    ports:
+      - "6379:6379"
   catalog.api:
     container_name: catalog.api
     environment:
@@ -17,3 +22,17 @@ services:
       - catalogdb
     ports:
       - "5153:80"
+
+  api:
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings:Redis=basketdb:6379
+    depends_on:
+      - basketdb
+    ports:
+      - "5169:80"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
