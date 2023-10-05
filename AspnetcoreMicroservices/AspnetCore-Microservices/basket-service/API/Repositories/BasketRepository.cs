@@ -14,6 +14,12 @@ namespace API.Repositories
             _redisCache = redisCache;
         }
 
+        public async Task<ShoppingCart> AddProductToBasket(ShoppingCart basket)
+        {
+            await _redisCache.SetStringAsync(basket.UserName, JsonConvert.SerializeObject(basket));
+            return await GetBasket(basket.UserName);
+        }
+
         public async Task DeleteBasket(string userName)
         {
             await _redisCache.RemoveAsync(userName);
