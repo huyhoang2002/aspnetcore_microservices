@@ -1,6 +1,15 @@
 version: '3.4'
 
 services:
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=123456789
   catalogdb:
     container_name: catalogdb
     restart: always
@@ -24,6 +33,13 @@ services:
     - POSTGRES_DB=discount
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+  orderdb:
+    container_name: orderdb
+    environment:
+    - SA_PASSWORD=Huy2002109@
+    - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
   catalog.api:
     container_name: catalog.api
     environment:
@@ -33,7 +49,6 @@ services:
       - catalogdb
     ports:
       - "5153:80"
-
   api:
     container_name: basket.api
     environment:
@@ -64,10 +79,21 @@ services:
   discount.grpc:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:Pgsql=Server=discountdb;Port=5432;Database=discount;User Id=admin;Password=123456789
     ports:
       - "5181:80"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  ordering.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings:SqlServer=Server=orderdb;Database=OrderDb;User Id=sa;Password=Huy2002109@
+    ports:
+      - "5019:80"
+    depends_on:
+      - orderdb
+
+
