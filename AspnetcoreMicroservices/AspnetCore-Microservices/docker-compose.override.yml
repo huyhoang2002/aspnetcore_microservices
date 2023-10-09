@@ -8,8 +8,8 @@ services:
       - "5672:5672"
       - "15672:15672"
     environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=123456789
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
   catalogdb:
     container_name: catalogdb
     restart: always
@@ -56,9 +56,11 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings:Redis=basketdb:6379
       - GrpcSettings:DiscountUrl=http://discount.grpc
+      - EventBusSettings:RabbitMQ=amqp://guest:guest@rabbitmq:5672
     depends_on:
       - basketdb
       - discount.grpc
+      - rabbitmq
     ports:
       - "5169:80"
     volumes:
@@ -90,10 +92,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings:SqlServer=Server=orderdb;Database=OrderDb;User Id=sa;Password=Huy2002109@
+      - ConnectionStrings:SqlServer=Server=orderdb;Database=OrderDb;User Id=sa;Password=Huy2002109@;TrustServerCertificate=True
+      - EventBusSettings:RabbitMQ=amqp://guest:guest@rabbitmq:5672
     ports:
       - "5019:80"
     depends_on:
       - orderdb
+      - rabbitmq
 
 

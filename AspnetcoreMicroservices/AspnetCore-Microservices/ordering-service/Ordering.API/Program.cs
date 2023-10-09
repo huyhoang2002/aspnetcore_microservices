@@ -14,6 +14,9 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddUnitOfWork();
 builder.Services.AddCqrs();
+builder.Services.AddConsumers();
+builder.Services.AddAutoMapperService();
+builder.Services.AddMassTransitConsumer(builder.Configuration);
 
 var app = builder.Build();
 
