@@ -1,4 +1,5 @@
 using API.Extensions;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,9 +9,11 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-ServiceCollectionExtension.AddRedis(services: builder.Services, configuration: builder.Configuration);
-ServiceCollectionExtension.AddRepository(builder.Services);
-ServiceCollectionExtension.AddGrpcService(builder.Services, builder.Configuration);
+builder.Services.AddRedis(configuration: builder.Configuration);
+builder.Services.AddRepository();
+builder.Services.AddGrpcService(builder.Configuration);
+builder.Services.AddMassTransitService(builder.Configuration);
+builder.Services.AddAutoMapperService();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

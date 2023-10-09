@@ -2,6 +2,9 @@
 using API.Repositories;
 using API.Repositories.interfaces;
 using Discount.Grpc.Protos;
+using EventBus.Messages.Common;
+using MassTransit;
+using System.Reflection;
 
 namespace API.Extensions
 {
@@ -18,6 +21,12 @@ namespace API.Extensions
             return services;
         }
 
+        public static IServiceCollection AddAutoMapperService(this IServiceCollection services)
+        {
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            return services;
+        }
+
         public static IServiceCollection AddRepository(this IServiceCollection services)
         {
             services.AddScoped<IBasketRepository, BasketRepository>();
@@ -28,6 +37,18 @@ namespace API.Extensions
         {
             services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(_ => _.Address = new Uri(configuration["GrpcSettings:DiscountUrl"]));
             services.AddScoped<DiscountGrpcService>();
+            return services;
+        }
+
+        public static IServiceCollection AddMassTransitService(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddMassTransit(config =>
+            {
+                config.UsingRabbitMq((ctx, config) =>
+                {
+                    config.Host(configuration["EventBusSettings:RabbitMQ"]);
+                });
+            });
             return services;
         }
     }
