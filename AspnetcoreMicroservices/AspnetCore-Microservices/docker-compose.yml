@@ -40,10 +40,17 @@ services:
       context: .
       dockerfile: ordering-service/Ordering.API/Dockerfile
 
+  webapplication1:
+    image: ${DOCKER_REGISTRY-}webapplication1
+    build:
+      context: .
+      dockerfile: ApiGateway/WebApplication1/Dockerfile
+
 volumes:
   mongo_data:
   postgres_data:
   
+
 
 
 
